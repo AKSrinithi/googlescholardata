@@ -1,0 +1,47 @@
+
+"""
+Created on Fri Jul  2 11:08:58 2021
+
+@author: Srinithi
+"""
+
+'''This script is to extract title, doi and abstract of literature from google scholar'''
+from bs4 import BeautifulSoup as bs
+import requests
+import pandas as pd
+
+headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
+queries = ['material', 'property']
+count = 0
+sno_lst=[]
+title_lst=[]
+url_lst=[]
+txt_lst=[]
+keyword_lst=[]
+
+with requests.Session() as s:
+   for query in queries:
+       for pgno in range(0,20,10):
+           url2 = 'https://scholar.google.com/scholar?start=' + str(pgno) + '&q=' + query + '&hl=en&as_sdt=0,5'
+           response=requests.get(url2,headers)
+           soup=bs(response.content,'lxml')
+           print("getting data for keyword",query)
+           for item in soup.select('[data-lid]'):
+               if(pgno>=0):
+                    article = soup.select('[data-lid]')
+                    count = count + 1
+                   
+                    ttl=item.select('h3')[0].get_text()
+                    url=item.select('a')[0]['href']
+                    sno_lst.append(count)
+                    title_lst.append(ttl)
+                    url_lst.append(url)
+
+                    keyword_lst.append(query)
+                    #print(ttl)
+                    #print('-----')
+               
+               else:
+                   print('cant access')
+data=pd.DataFrame(list(zip(sno_lst,title_lst,url_lst,keyword_lst)),columns=['sno','title','url','keyword'])
+data
