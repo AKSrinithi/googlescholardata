@@ -30,7 +30,6 @@ with requests.Session() as s:
                if(pgno>=0):
                     article = soup.select('[data-lid]')
                     count = count + 1
-                   
                     ttl=item.select('h3')[0].get_text()
                     url=item.select('a')[0]['href']
                     sno_lst.append(count)
